@@ -6,22 +6,36 @@ const COINS_GROUP: String = "Coins"
 const PROJECTILES_GROUP: String = "Projectiles"
 
 onready var hub: TileMap = $TileMap
-onready var level: TileMap = $TileMap
+onready var level_scene: PackedScene = null
+onready var level: Node = $TileMap
+onready var bgm: AudioStreamPlayer = $Audio/BGM
+onready var defaultBGMStream: AudioStream = bgm.stream.duplicate()
 
-onready var container: ViewportContainer = get_parent()
-onready var crt_shader = preload("res://shaders/CRT.gdshader")
-
-var completionSound = preload("res://sfx/portal.wav")
-var coinSound = preload("res://sfx/coin.wav")
+var entering_portal: bool = false
 
 
 func _ready() -> void:
 	EventBus.connect("build_block", self, "_on_build")
-	EventBus.connect("crt_filter_toggle",self,"_on_crt_toggle")
-	EventBus.connect("volume_changed",self,"_on_volume_change")
-	Settings.load_data()
+	EventBus.connect("bgm_changed", self, "_bgm_changed")
+	EventBus.connect("restart_level", self, "_restart_level")
 	_hook_portals()
 	VisualServer.set_default_clear_color(Color.black)
+	randomize()
+
+
+func _exit_tree() -> void:
+	EventBus.emit_signal("game_exit")
+
+
+func _bgm_changed(data) -> void:
+	if typeof(data) == TYPE_STRING and data == "reset":
+		bgm.stream = defaultBGMStream
+		bgm.playing = true
+	else:
+		if "playing" in data:
+			bgm.playing = data.playing
+		if "stream" in data:
+			bgm.stream = data.stream
 
 
 func _hook_portals() -> void:
@@ -41,16 +55,14 @@ func _on_build(data) -> void:
 	var player = data["player"]
 	# reference to player is needed for the case where there are more than one player
 	# eg. Level03
-	
+
 	# place a block in the level.
 	if level != null:
 		# Find the player's current position on the tilemap, and look one cell
 		# to the left or right depending on which direction the player sprite
 		# is facing.
 		var player_tile = level.world_to_map(player.position)
-		var target_tile_x = player_tile[0] + 1
-		if player.sprite.flip_h:
-			target_tile_x = player_tile[0] - 1
+		var target_tile_x = player_tile[0] + (1 if player.pivot.scale.x > 0 else -1)
 		var target_tile_y = player_tile[1]
 		var target_cell_v = level.get_cell(target_tile_x, target_tile_y)
 		if target_cell_v == 0:
@@ -62,60 +74,56 @@ func _on_build(data) -> void:
 
 
 func _on_endportal_body_entered(body: Node2D, next_level: PackedScene, portal: EndPortal) -> void:
+	# Make sure the player can't trigger this function more than once.
+	if entering_portal || not portal.can_enter(body):
+		return
+	entering_portal = true
+
 	# Despawn all projectiles
 	for despawn in get_tree().get_nodes_in_group(PROJECTILES_GROUP):
 		despawn.queue_free()
 
 	body.get_parent().remove_child(body)
-	var animation = portal.on_portal_enter()
-	
-	yield(animation, "animation_finished")
+
+	EventBus.emit_signal("level_completed", {})
+
+	var animation: AnimationPlayer = portal.on_portal_enter(body)
+	if animation == null:
+		yield(get_tree().create_timer(1.0), "timeout")
+	else:
+		yield(animation, "animation_finished")
 	call_deferred("_finish_level", next_level)
+
 
 func _finish_level(next_level: PackedScene = null) -> void:
 	# Create the new level, insert it into the tree and remove the old one.
 	# If next_level is null, return to the hub
-	var new_level: TileMap = next_level.instance() if next_level != null else hub
-	add_child_below_node(level, new_level)
-	if level == hub:
-		remove_child(level)
+	level_scene = next_level
+	var new_level: Node = level_scene.instance() if level_scene != null else hub
+
+	if new_level != level:
+		add_child_below_node(level, new_level)
+		if level == hub:
+			remove_child(level)
+		else:
+			level.queue_free()
+			yield(level, "tree_exited")
+		level = new_level
 	else:
-		level.queue_free()
-		yield(level, "tree_exited")
-	level = new_level
-	if level == hub:
-		for c in level.get_children():
-			if c is SpawnPoint:
-				c.spawn_mario()
-				break
+		var idx: int = level.get_index() - 1
+		remove_child(level)
+		add_child_below_node(get_child(idx), new_level)
 
 	# Do not forget to hook the new portals
 	_hook_portals()
 
 	#Removing instructions
-	$UI/UI/RichTextLabel.visible = false
+	$UI/UI/Instructions.visible = false
 
-	EventBus.emit_signal("level_started", {})
-
-
-func _on_crt_toggle(on: bool) -> void:
-	if on:
-		container.material.shader = crt_shader
-	else:
-		container.material.shader = null
+	# Reset entering portal state
+	entering_portal = false
+	EventBus.emit_signal("level_started", "")
 
 
-func _on_volume_change(bus) -> void:
-	match str(bus):
-		"game":
-			AudioServer.set_bus_volume_db(
-				AudioServer.get_bus_index("Master"), linear2db(Settings.volume_game / 10.0)
-			)
-		"music":
-			AudioServer.set_bus_volume_db(
-				AudioServer.get_bus_index("music"), linear2db(Settings.volume_music / 10.0)
-			)
-		"sfx":
-			AudioServer.set_bus_volume_db(
-				AudioServer.get_bus_index("sfx"), linear2db(Settings.volume_sfx / 10.0)
-			)
+func _restart_level() -> void:
+	_finish_level(level_scene)

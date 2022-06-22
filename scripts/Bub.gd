@@ -33,6 +33,8 @@ var _motion = Vector2.ZERO
 var _moving = true
 var _shooting_cooldown = 0
 
+var damage = 0
+
 onready var _animation_player := $AnimationPlayer
 onready var _ray_walking := $RayCastWalking
 onready var _ray_shooting := $RayCastShooting
@@ -41,6 +43,7 @@ onready var _muzzle := $GunAnchor/Sprite/Muzzle
 onready var sprite := $Sprite
 onready var tween := $Tween
 onready var pop_gun_sfx := $PopGun
+onready var explode_sfx := $Explode
 
 onready var original_scale = sprite.scale
 onready var squash_scale = Vector2(original_scale.x * 1.4, original_scale.y * 0.4)
@@ -107,8 +110,13 @@ func disable_collision():
 # until the animations are finished.
 func _handle_dying(_killer):
 	disable_collision()
+	if _killer is CoinProjectile:
+		EventBus.emit_signal("enemy_hit_coin")
+	elif _killer is Fireball:
+		EventBus.emit_signal("enemy_hit_fireball")
 	_animation_player.play("die")
 	$SquishParticles.emitting = true
+	explode_sfx.play()
 	yield(_animation_player, "animation_finished")
 
 
@@ -121,14 +129,15 @@ func fire_bullet():
 	bullet.scale.x = direction
 
 	bullet.start_moving(Vector2.LEFT if direction < 0 else Vector2.RIGHT)
-	
+
 	# instance muzzle flash
 	var flash = muzzle_flash_scene.instance()
-	get_tree().root.add_child(flash)
-	flash.global_position = _muzzle.global_position
-	
+	get_parent().add_child(flash)
+	flash.scale = scale
+	flash.position = _muzzle.global_position
+
 	pop_gun_sfx.play()
-	
+
 	yield(_animation_player, "animation_finished")
 	_shooting_cooldown = MAX_SHOOTING_COOLDOWN
 	start_walking()
@@ -143,6 +152,7 @@ func _on_KillTrigger_body_entered(body):
 	if not body is Player:
 		return
 	var player = body as Player
+	player.stats.jump_xp += 1
 	player.bounce(BOUNCE_STRENGTH)
 	squash(0.075)
 	yield(tween, "tween_all_completed")

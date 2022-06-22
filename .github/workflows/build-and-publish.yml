@@ -6,17 +6,39 @@ name: build and publish
 on:
   push:
     branches:
-      - main # triggers ANY time changes are pushed to the main branch
-    paths-ignore: # UNLESS they're not game-relevant
-      - '.godot_ignore'
-      - '.gitignore'
+      - main
+    paths-ignore: # do not build for game-irrelvant changes
+      - '.**'
       - 'LICENSE'
+      - 'ACKNOWLEDGEMENTS'
       - '**.md'
-      - '.github'
 
 jobs:
+  format_code:
+    runs-on: ubuntu-latest
+    # To prevent infinite loops
+    if: "!contains(github.event.head_commit.message, 'Auto-Format GDScript')"
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          token: ${{ secrets.BOT_PAT }}
+
+      - uses: actions/setup-python@v3
+        with: 
+          python-version: 3.x
+
+      - run: pip3 install 'gdtoolkit==3.*'
+
+      - run: gdformat **/*.gd
+
+      - uses: stefanzweifel/git-auto-commit-action@v4
+        with:
+          commit_message: Auto-Format GDScript
+          file_pattern: "**/*.gd"
+
   build_game:
     name: Build Game
+    if: ${{ github.event.label.name != 'skip release' && !contains(github.event.head_commit.message, 'Auto-Format GDScript') }}
     runs-on: ubuntu-latest
     steps:
       - name: checkout latest code
@@ -24,8 +46,12 @@ jobs:
         with:
           fetch-depth: 0
       - name: update credits
-        run: |
-          git shortlog --summary HEAD |sed -E 's/\s*[0-9]+\s+//g' >credits.txt
+        uses: actions/github-script@v3
+        with:
+          script: |
+            const path = require('path');
+            const script = require(path.resolve('.github/workflows/update-credits.js'));
+            await script(github, context)
       - name: export with Godot Engine and release on GitHub
         uses: firebelley/godot-export@v3.0.0
         with:

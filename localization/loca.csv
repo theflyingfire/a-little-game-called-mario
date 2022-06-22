@@ -1,20 +1,64 @@
-"keys","en","de"
-"TRANSLATE_ME","TRANSLATE ME!","ÜBERSETZ MICH!"
-"TUTORIAL_MOVEMENT","ARROW KEYS TO [rainbow freq=0.5 sat=1 val=20]MOVE[/rainbow]
+keys,de
+TRANSLATE ME!,ÜBERSETZE MICH!
+"ARROW KEYS TO [rainbow freq=0.5 sat=1 val=20]MOVE[/rainbow]
+
 SHIFT TO [wave amp=50 freq=2]SPRINT[/wave]
+
 SPACE TO [wave amp=50 freq=2]JUMP[/wave]
+
 CONTROL/Z TO [wave amp=50 freq=2]SHOOT[/wave]
-B TO[wave amp=50 freq=2] FIREBALL [/wave]  (WITH POWERUP)","PFEILTASTEN ZUM [rainbow freq=0.5 sat=1 val=20]BEWEGEN[/rainbow]
-UMSCHALT ZUM [wave amp=50 freq=2]SPRINTEN[/wave]
+
+B TO[wave amp=50 freq=2] FIREBALL [/wave]
+
+(WITH POWERUP)","UMSCHALT ZUM [wave amp=50 freq=2]SPRINTEN[/wave]
+
 LEERTASTE ZUM [wave amp=50 freq=2]SPRINGEN[/wave]
+
+2X LEERTASTE FUER [wave amp=50 freq=2]DOPPELSPRUNG[/wave]
+
 STRG/Z ZUM [wave amp=50 freq=2]SCHIESSEN[/wave]
-B ZUM[wave amp=50 freq=2] FEUERBALL [/wave]  (MIT POWERUP)"
-"UI_COINS","
-[wave amp=50 freq=2]COINS:[rainbow freq=0.5 sat=1 val=20]%d[/rainbow] [/wave]","
-[wave amp=50 freq=2]MÜNZEN:[rainbow freq=0.5 sat=1 val=20]%d[/rainbow] [/wave]"
-"CREDITS_TITLE","CREDITS","CREDITS"
-"UI_LEVEL"," [wave amp=50 freq=2]LEVEL:[rainbow freq=0.5 sat=1 val=20]%d[/rainbow] [/wave]"," [wave amp=50 freq=2]LEVEL:[rainbow freq=0.5 sat=1 val=20]%d[/rainbow] [/wave]"
-"ACHIEVEMENT_UNLOCKED","ACHIEVEMENT UNLOCKED: %s","ERRUNGENSCHAFT FREIGESCHALTET: %s"
-"ACHIEVEMENT_COINS_LEVEL0","GET ALL THE COINS IN LEVEL 0","SAMMLE ALLE MÜNZEN IN LEVEL 0"
-"ACHIEVEMENT_COINS_LEVEL1","GET ALL THE COINS IN LEVEL 1","SAMMLE ALLE MÜNZEN IN LEVEL 1"
-"ACHIEVEMENT_COINS_LEVEL2","GET ALL THE COINS IN LEVEL 2","SAMMLE ALLE MÜNZEN IN LEVEL 2"
+
+B FUER DEN[wave amp=50 freq=2] FEUERBALL [/wave] (MIT POWERUP)"
+COINS:,MUENZEN:
+Out of the way!,Aus dem Weg!
+It won't move.,Es bewegt sich kein Stück.
+Open Sesame!,Sesam öffne dich!
+"Oh, another visitor!","Oh, ein anderer Besucher!"
+Who was here before me?,Wer war vor mir hier?
+I don't remember...,Ich kann mich nicht erinnern...
+There wase definitly someone here.\nHe wanted to do something... Finish something...,Es war auf jeden Fall jemand hier.\nEr wollte irgendwas... Irgendetwas beenden...
+I will find out!,Ich werde es herausfinden!
+Can you help me get out of here?,Kannst du mir hier heraushelfen?
+"No, I'm just a ladder. I'm no use if you want to climb out of here...","Nein, ich bin nur eine Leiter. Ich nütze nichts wenn du hier herausklettern willst..."
+Bye then!,Dann tschüß!
+CREDITS,CREDITS
+"
+[wave amp=50 freq=2]HEARTS:[rainbow freq=0.5 sat=1 val=20]%s[/rainbow] [/wave]","
+[wave amp=50 freq=2]HERZEN:[rainbow freq=0.5 sat=1 val=20]%s[/rainbow] [/wave]"
+"
+[wave amp=50 freq=2]LEVEL:[rainbow freq=0.5 sat=1 val=20]%d[/rainbow] [/wave]","
+[wave amp=50 freq=2]LEVEL:[rainbow freq=0.5 sat=1 val=20]%d[/rainbow] [/wave]"
+YOU DIED,
+"[wave amp=50 freq=2]YOU GOT THE STAR:
+[rainbow freq=0.5 sat=1 val=20]%s[/rainbow] [/wave]","[wave amp=50 freq=2]DU HAST DEN STERN:
+[rainbow freq=0.5 sat=1 val=20]%s[/rainbow] [/wave]"
+"
+[wave amp=50 freq=2]YOU ALREADY HAVE:
+[rainbow freq=0.5 sat=1 val=20]%s[/rainbow] [/wave]","
+[wave amp=50 freq=2]DU HAST SCHON:
+[rainbow freq=0.5 sat=1 val=20]%s[/rainbow] [/wave]"
+ACHIEVEMENT UNLOCKED: %s,ERRUNGENSCHAFT FREIGESCHALTET: %s
+GET ALL THE COINS IN LEVEL 0,SAMMLE ALLE MUENZEN IN LEVEL 0
+GET ALL THE COINS IN LEVEL 1,SAMMLE ALLE MUENZEN IN LEVEL 1
+GET ALL THE COINS IN LEVEL 2,SAMMLE ALLE MUENZEN IN LEVEL 2
+"SPACE TO [rainbow freq=0.5 sat=1 val=20]FLY UP[/rainbow]", "LEERTASTE ZUM [rainbow freq=0.5 sat=1 val=20]HOCHFLIEGEN[/rainbow]"
+"[rainbow freq=0.5 sat=1 val=20]GAME OVER[/rainbow]", "[rainbow freq=0.5 sat=1 val=20]SPIEL IST AUS[/rainbow]"
+"PRESS 'R' TO RESTART", "DRÜCKE 'R', UM NEU ZU STARTEN"
+IT'S RAINING COINS! YOU SHOT 10 TIMES!,ES REGNET MÜNZEN! DU HAST 10 MAL GESCHOSSEN!
+"HEY PILOT. IT'S ME, LIQUID RANDALL.",
+IT LOOKS LIKE SOME NASTY MERGE CONFLICTS ARE BOMBARDING THE REPO PLANET.,
+BUT DON'T SWEAT IT, LITTLE BUDDY- THE NEW AND IMPROVED MARWING CAN, UH, TAKE CARE OF IT.,
+JUST UH... FLY AROUND A BIT AND SHOOT SOME THINGS.,
+OH! UH, THEY'RE, UH, UNMANNED DRONES, BY THE WAY. IT'S FINE, YOU DON'T HAVE TO FEEL BAD. I MEAN I APPRECIATE YOUR KIND HEART, YOUR UH, CONSCIENCE, YOUR MORTAL FIBER, BUT UH, IT'S FINE. YOU CAN-YOU CAN JUST SHOOT, JUST, JUST SHOOT AWAY, IT'S FINE. IT'S OK, JUST SHOOT, JUST SHOOT, AND... PEW-PEW PEW PEW-PEW! IT'S GOOD, IT'S ALL GOOD, IT'S ALL GOOD.,
+SO, UH, GET TO WORK, MY DARLING.,
+I BELIEVE IN YOU. YOU CAN DO IT. GOOD LUCK, CHAMP, I KNOW YOU'LL MAKE IT. YOU KNOW I WISH I COULD BE OUT THERE WITH YOU AMONG THE STARS, YOU KNOW, TO BE YOUNG AND FREE AGAIN, BUT, OH WELl. I NO LONGER HAVE THUMBS, I CAN'T OPERATE A CONTROL STICK, BUT UH, I CAN STILL BE HERE WITH YOU, IN THE RADIO BROADCAST COMMUNICATIONS TRANSMISSIONS SIGNAL, AND UH WELP, THAT'LL BE GOOD ENOUGH FOR ME I THINK. UH, ER, MAKE US PROUD.,

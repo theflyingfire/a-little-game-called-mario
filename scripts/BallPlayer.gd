@@ -6,35 +6,26 @@ const MAXSPEED = 600
 const ACCEL = 50
 const SLIP_RANGE = 16
 
-export(PackedScene) var default_projectile: PackedScene = preload("res://scenes/CoinProjectile.tscn")
-export(PackedScene) var fireball_projectile: PackedScene = preload("res://scenes/powerups/Fireball.tscn")
-
 var motion = Vector2()
 
 onready var sprite = $Sprite
 onready var tween = $Tween
-onready var trail : Line2D = $Trail
+onready var trail: Line2D = $Trail
 
 onready var original_scale = sprite.scale
 onready var squash_scale = Vector2(original_scale.x * 1.4, original_scale.y * 0.4)
 onready var stretch_scale = Vector2(original_scale.x * 0.4, original_scale.y * 1.4)
-func _ready() -> void:
-	EventBus.connect("coin_collected", self, "_on_coin_collected")
-	EventBus.connect("fire_flower_collected", self, "_on_flower_collected")
 
 
-func _physics_process(delta: float) -> void:
+func _physics_process(_delta: float) -> void:
 	if Input.is_action_just_pressed("Build"):
-		EventBus.emit_signal("build_block", {"player":self})
+		EventBus.emit_signal("build_block", {"player": self})
 
 	var max_speed_modifier = 1
 	var acceleration_modifier = 1
-	var animationSpeed = 8
 	if Input.is_action_pressed("sprint"):
 		max_speed_modifier = 1.5
 		acceleration_modifier = 3
-		animationSpeed = 60
-	sprite.frames.set_animation_speed("run", animationSpeed)
 
 	if Input.is_action_pressed("right"):
 		motion.x += ACCEL * acceleration_modifier
@@ -52,7 +43,7 @@ func _physics_process(delta: float) -> void:
 		
 		"""
 	else:
-		sprite.play("idle")
+		#sprite.play("idle")
 		motion.x = lerp(motion.x, 0, 0.05)
 
 	if Input.is_action_pressed("up"):
@@ -70,7 +61,6 @@ func _physics_process(delta: float) -> void:
 		"""
 	else:
 		motion.y = lerp(motion.y, 0, 0.05)
-
 
 	motion.x = clamp(motion.x, -MAXSPEED * max_speed_modifier, MAXSPEED * max_speed_modifier)
 
@@ -104,20 +94,12 @@ func try_slip(angle: float):
 	return false
 
 
-func _input(event: InputEvent):
-	# Remove one coin and spawn a projectile
-	# Continus shooting after 0 coins
-	"""
-	if event.is_action_pressed("shoot") and coins > 0:
-		EventBus.emit_signal("coin_collected", { "value": -1, "type": "gold" })
-		shoot(default_projectile)
-	"""
-
 # Use this for wallbanging
 func land():
 	squash(0.05)
 	yield(tween, "tween_all_completed")
 	unsquash(0.18)
+
 
 """
 func shoot(projectile_scene: PackedScene):
@@ -134,8 +116,8 @@ func shoot(projectile_scene: PackedScene):
 	projectile.position = $Sprite/ShootOrigin.global_position
 	# Projectile handles movement
 	projectile.start_moving(shoot_dir)
-	emit_signal("shooting")
 """
+
 
 func look_right():
 	sprite.flip_h = false
@@ -202,6 +184,7 @@ func unsquash(time = 0.1, _returnDelay = 0, squash_modifier = 1.0):
 	)
 	tween.start()
 
+
 func reset() -> void:
 	look_right()
 
@@ -211,8 +194,3 @@ func bounce(strength = 1100):
 	yield(tween, "tween_all_completed")
 	stretch(0.15)
 	motion.y = -strength
-
-func _on_coin_collected(data):
-	var value := 1
-	if data.has("value"):
-		value = data["value"]

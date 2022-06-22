@@ -1,21 +1,28 @@
 class_name SpawnPoint
 extends Position2D
 
-var player_scene = load("res://scenes/Player.tscn")
+signal player_spawned(player)
 
-func _ready():
-	spawn_mario()
+export(PackedScene) var player_scene: PackedScene
 
-func spawn_mario():
-	var player = null
-	for c in get_node("..").get_children():
-		if c is Player:
-			player = c
-			break
-	
-	if not player:
-		player = player_scene.instance()
-		get_node("..").call_deferred("add_child", player)
-	
+var fallback_player: PackedScene = preload("res://scenes/platformer/characters/Player.tscn")
+
+
+func _enter_tree():
+	spawn()
+
+
+func spawn():
+	for node in get_parent().get_children():
+		if node is Player:
+			node.queue_free()
+
+	var player: Player = (player_scene if player_scene != null else fallback_player).instance()
+	if not player is Player:
+		player = fallback_player.instance()
+	player.set_name("Player")
+	get_parent().call_deferred("add_child", player)
+
 	player.position = self.position
 	player.visible = true
+	self.emit_signal("player_spawned", player)
