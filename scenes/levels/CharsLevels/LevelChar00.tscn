@@ -10,7 +10,7 @@
 [ext_resource path="res://scenes/enemies/FireMech.tscn" type="PackedScene" id=8]
 [ext_resource path="res://scenes/enemies/MotorSam.tscn" type="PackedScene" id=9]
 
-[node name="TileMap" type="TileMap"]
+[node name="TileMap2" type="TileMap"]
 tile_set = ExtResource( 1 )
 collision_layer = 2
 collision_mask = 0
@@ -19,24 +19,23 @@ tile_data = PoolIntArray( -1, 1, 0, -65536, 1, 0, -65535, 1, 0, -65534, 1, 0, -6
 script = ExtResource( 6 )
 
 [node name="PictureFrame" parent="." instance=ExtResource( 7 )]
-margin_left = 48.0
+margin_left = 32.0
 margin_top = 176.0
-margin_right = 272.0
-margin_bottom = 272.0
+margin_right = 312.0
+margin_bottom = 288.0
 
 [node name="RichTextLabel" parent="PictureFrame" index="0"]
-bbcode_text = "KILL WALLMECH
+bbcode_text = "KILL EVERYONE TO ESCAPE THIS ROOM
 
-[Z] THROW COIN
+[Z/CTRL] THROW COIN
 "
-text = "KILL WALLMECH
+text = "KILL EVERYONE TO ESCAPE THIS ROOM
 
-[Z] THROW COIN
+[Z/CTRL] THROW COIN
 "
 
 [node name="GreedyCoinBox" parent="." instance=ExtResource( 3 )]
 position = Vector2( 160, 352 )
-bounce_count = 10
 
 [node name="WallMech" parent="." instance=ExtResource( 4 )]
 position = Vector2( 483, 258 )

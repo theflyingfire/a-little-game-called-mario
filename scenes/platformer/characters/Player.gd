@@ -4,12 +4,16 @@ extends KinematicBody2D
 # This signal is emited from Shooter.gd
 #warning-ignore: UNUSED_SIGNAL
 signal shooting
+signal crouched
+signal uncrouched
 
 const MAXSPEED = 350
-const JUMPFORCE = 1100
+const CROUCH_MAXSPEED = MAXSPEED / 3
+const JUMPFORCE = 1120
 const MAXACCEL = 50
 const MINACCEL = 0.25 * MAXACCEL
 const JERK = 0.25
+const SKIDTHRESHOLD = 700
 const STOPTHRESHOLD = 5  # Speed at which we should stop motion if idle.
 const COYOTE_TIME = 0.1
 const JUMP_BUFFER_TIME = 0.05
@@ -27,6 +31,8 @@ var gravity_multiplier = 1  # used for jump height variability
 var double_jump = true
 var crouching = false
 var grounded = false
+var skidding : bool = false
+var skidding_force: float
 var anticipating_jump = false  # the small window of time before the player jumps
 var super_jumping = false
 var super_jump_timer = 0.0
@@ -71,32 +77,49 @@ func _exit_tree():
 
 func _physics_process(delta: float) -> void:
 	# set these each loop in case of changes in gravity or acceleration modifiers
-	x_motion.max_speed = MAXSPEED
+	x_motion.max_speed = MAXSPEED if not crouching else CROUCH_MAXSPEED
 	x_motion.max_accel = MAXACCEL
 	y_motion.set_axis(gravity.direction)
 	y_motion.max_accel = gravity.strength
+	
+	# skidding threshold changes on how fast you're going.
+	# tweaked until it felt good, value over 350 doesn't skid while walking. 
+	skidding_force = SKIDTHRESHOLD
 
 	x_motion.max_speed *= powerupspeed
 	x_motion.max_accel *= powerupaccel
-
+	
 	var jerk_modifier = 1
 	var animationSpeed = 1
 	if Input.is_action_pressed("sprint"):
 		stats.speed += 1
 		x_motion.max_speed *= 1.5
 		x_motion.max_accel *= 3
+
+
+		# skids until a little before you're moving in the opposite direction to give a run up.
+		skidding_force = (SKIDTHRESHOLD * powerupspeed) - (x_motion.max_speed * 1.2)
 		jerk_modifier = 3
 		animationSpeed = 6
 	anim.playback_speed = animationSpeed
 	if Input.is_action_pressed("right"):
 		jerk_right(JERK * jerk_modifier)
+		
+		skidding = x_motion.get_speed() < -skidding_force && _is_on_floor()
 		anim.playAnim("Run")
+			
 		# pointing the character in the direction he's running
 		look_right()
+		
+		
 	elif Input.is_action_pressed("left"):
 		jerk_left(JERK * jerk_modifier)
+		skidding = x_motion.get_speed() > skidding_force && _is_on_floor()
 		anim.playAnim("Run")
+			
 		look_left()
+		
+		
 	else:
 		anim.playAnim("Idle")
 		if x_motion.get_speed() > STOPTHRESHOLD:
@@ -107,7 +130,14 @@ func _physics_process(delta: float) -> void:
 			x_motion.set_speed(0)
 			x_motion.set_jerk(0)
 			x_motion.set_accel(0)
-
+		skidding = false
+		
+	if skidding:
+		anim.playAnim("Skid")
+	
+	$SkidSFX.volume_db = clamp(abs(x_motion.get_speed()) * 0.02, 0, 10)
+	$SkidSFX.playing = skidding
+		
 	jump_buffer_timer -= delta
 	if Input.is_action_just_pressed("jump") and not super_jumping:
 		# If experienced enough, do a super crouch jump
@@ -206,6 +236,7 @@ func crouch():
 	set_hitbox_crouching(collision, original_collision_extents)
 	set_hitbox_crouching(hitbox_collision, original_hitbox_extents)
 	squash()
+	emit_signal("crouched")
 
 
 func uncrouch():
@@ -213,6 +244,7 @@ func uncrouch():
 	set_hitbox_uncrouch(collision, original_collision_extents)
 	set_hitbox_uncrouch(hitbox_collision, original_hitbox_extents)
 	unsquash()
+	emit_signal("uncrouched")
 
 
 func set_hitbox_crouching(col, original_extents):
@@ -366,6 +398,8 @@ func _on_heart_change(delta: int, total: int):
 		flash_sprite()
 
 	if total <= 0:
+		if crouching:
+			uncrouch()
 		EventBus.emit_signal("player_died")
 
 
@@ -385,5 +419,5 @@ func flash_sprite() -> void:
 
 
 func _end_flash_sprite() -> void:
-	effect_anim.stop()
+	effect_anim.play("RESET")
 	hitbox.set_deferred('monitoring', true)

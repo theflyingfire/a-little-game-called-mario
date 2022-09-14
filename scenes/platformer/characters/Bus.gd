@@ -1,6 +1,7 @@
 extends AnimatedSprite
 
 export(NodePath) var collision_shape: NodePath
+export(NodePath) onready var hitbox_collision = get_node(hitbox_collision) as CollisionShape2D
 
 var inventory = preload("res://scripts/resources/PlayerInventory.tres")
 
@@ -8,11 +9,10 @@ onready var player : Player = owner
 onready var horn_sound : AudioStreamPlayer = get_node("Horn")
 onready var resting_sound : AudioStreamPlayer2D = get_node("brrrrrrrrr")
 onready var moving_sound : AudioStreamPlayer2D = get_node("moving_sound")
+onready var collision: CollisionShape2D = get_node(collision_shape)
 
 enum busState {RESTING, MOVING};
 var state
-onready var collision: CollisionShape2D = get_node(collision_shape)
-
 
 
 func _ready() -> void:
@@ -21,12 +21,6 @@ func _ready() -> void:
 
 
 func _process(_delta: float) -> void:
-	if inventory.has_bus:
-		player.powerupspeed = 4
-		player.powerupaccel = 2
-	else:
-		player.powerupspeed = 1
-		player.powerupaccel = 1
 	
 	if  (Input.is_action_pressed("right") or Input.is_action_pressed("left")):
 		_set_state(busState.MOVING)
@@ -51,6 +45,7 @@ func _activate_bus(active: bool) -> void:
 
 	# Collision
 	collision.disabled = !active
+	hitbox_collision.disabled = !active	
 	player.collision.disabled = active 
 	set_process(active)
 	inventory.has_bus = active # does nothing if already active.
@@ -66,19 +61,22 @@ func _activate_bus(active: bool) -> void:
 		player.powerupaccel = 1
 		moving_sound.playing = false 
 		resting_sound.playing = false
+	else:
+		player.powerupspeed = 4
+		player.powerupaccel = 2
 
 func _set_state(newState):
 	if(state == newState):
 		return
 	if (newState == busState.RESTING):
 		animation = "standing"
-		playing = false
-		resting_sound.playing = true # When more state sounds are added that continuously should play
+		playing = true
+		resting_sound.play(resting_sound.get_playback_position()) # When more state sounds are added that continuously should play
 		moving_sound.playing = false # make all the sounds a dictionary.
 	if (newState == busState.MOVING):
 		animation = "driving"
 		playing = true
-		moving_sound.playing = true
+		moving_sound.play(moving_sound.get_playback_position())
 		resting_sound.playing = false
 	state = newState
 

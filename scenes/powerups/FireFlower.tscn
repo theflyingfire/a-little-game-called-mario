@@ -1,8 +1,9 @@
-[gd_scene load_steps=5 format=2]
+[gd_scene load_steps=6 format=2]
 
 [ext_resource path="res://scripts/powerups/FireFlower.gd" type="Script" id=1]
 [ext_resource path="res://sprites/jacob_face.jpg" type="Texture" id=2]
 [ext_resource path="res://scenes/ui/Themes/Default/DefaultFont.tres" type="DynamicFont" id=3]
+[ext_resource path="res://scenes/objects/NotesNewTrigger.tscn" type="PackedScene" id=4]
 
 [sub_resource type="RectangleShape2D" id=1]
 extents = Vector2( 31.5, 43 )
@@ -22,19 +23,23 @@ position = Vector2( 3.5, 1 )
 shape = SubResource( 1 )
 
 [node name="Instructions" type="RichTextLabel" parent="."]
-anchor_left = 0.03
-anchor_top = 0.05
-anchor_right = 0.481
-anchor_bottom = 0.217
-margin_left = -184.0
-margin_top = -117.0
-margin_right = 75.0
-margin_bottom = -35.0
+anchor_left = 0.5
+anchor_right = 0.5
+margin_left = -316.0
+margin_top = -83.0
+margin_bottom = -51.0
 rect_scale = Vector2( 2, 2 )
 custom_constants/line_separation = 0
 custom_fonts/normal_font = ExtResource( 3 )
-bbcode_text = "
-B TO SHOOT FIREBALL "
-text = "
-B TO SHOOT FIREBALL "
+bbcode_enabled = true
+bbcode_text = "[center]Fire Flower[/center]"
+text = "Fire Flower"
 fit_content_height = true
+
+[node name="NotesNewTrigger" parent="." instance=ExtResource( 4 )]
+pageName = "Fire Flower"
+pageDesc = "Ah yes, the Inflamus imitatus, such a wonderful yet rare plant. Consumption lets lizards like me shoot magical fireballs.
+
+To avoid being eaten, the plant uses complex light manipulation to take the appearnce of a human head."
+pageSprite = "fire_flower"
+pageSpriteScale = Vector2( 0.8, 0.8 )

@@ -12,6 +12,8 @@ signal shot()
 signal bus_collected(data)
 signal coin_collected(data)
 signal fire_flower_collected(data)
+signal fire_flower_refilled(amount)
+signal fire_flower_changed(new_value)
 signal star_collected(starname, again)
 
 # Enemies
@@ -24,6 +26,9 @@ signal player_spotted(spotted_by, player)
 # Levels
 signal level_completed(data)
 signal level_started(name)
+signal level_changed(to)
+signal level_exited()
+signal hub_entered()
 signal restart_level()
 
 # Audio
@@ -62,3 +67,10 @@ signal volume_changed(data)
 
 # Environmental
 signal big_button_pressed(button_id)
+signal show_all_portals()
+
+# Notes
+signal note_added(name, desc, sprite, spriteScale)
+signal notes_opened()
+signal notes_closed()
+signal notes_updated()

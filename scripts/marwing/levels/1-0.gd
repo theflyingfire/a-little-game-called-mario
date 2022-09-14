@@ -40,15 +40,17 @@ func _ready ():
 		},
 	]
 	yield(get_tree().create_timer(0.5),"timeout")
-	$DialogueBox.popup()
+	$DialogueBox.show()
 	$DialogueBox.start_line(0)
 
 	act_number = 1
 	level_number = 0
 	name = "Introduction"
 
+
 func _process (dt: float):
 	# Maintains an infinite looping path which will be broken when we exit the dialogue
 	if 1 == $Path/Marwing.unit_offset: $Path/Marwing.unit_offset = 0;
 	if $DialogueBox.done:
-		pass # this is where eventually we'll yield and then move to the next level
+		# this is where eventually we'll yield and then move to the next level
+		EventBus.emit_signal("level_exited")

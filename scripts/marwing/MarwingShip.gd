@@ -22,7 +22,7 @@ var invulnerable: bool = true;                                 # whether or not 
 
 # Projectile information
 export var projectile: PackedScene;
-onready var fallback_projectile: PackedScene = preload("res://scenes/marwing/projectiles/DefaultProj.tscn");
+onready var fallback_projectile: PackedScene = preload("res://scenes/levels/marwing/projectiles/DefaultProj.tscn");
 onready var fire_timer: Timer = get_node("FireTimer");
 var can_fire: bool = true;
 
@@ -36,7 +36,7 @@ func _physics_process (dt: float):
 	if can_move: offset = offset + (dt * forward_speed * (1 if move_forward else -1));
 
 	# toggle death animation when hp hits zero, then remove node from scene
-	if 0 == hp:
+	if hp <= 0 and not invulnerable:
 		can_move = false;
 		can_strafe = false;
 		can_shoot = false;
